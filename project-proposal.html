@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Project Proposal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chosen Palette: Calm Harmony (Warm Neutrals with Muted Teal Accent) -->
+    <!-- Application Structure Plan: A single-page application with a top navigation bar (Overview, Scope, Cost, Roadmap, Tech Stack). This tabbed/section-based structure is chosen to break down the dense proposal information into manageable, thematic chunks, allowing for non-linear exploration by the client. The goal is to make the proposal feel like an interactive dashboard rather than a static document, enhancing clarity and engagement. -->
+    <!-- Visualization & Content Choices: 
+    - Overview: Goal: Inform. Method: Key metric cards. Interaction: Hover. Justification: Quick summary.
+    - Scope: Goal: Organize. Method: Interactive grid of cards. Interaction: Click to expand. Justification: Manages long lists effectively.
+    - Cost: Goal: Compare. Method: Chart.js Donut Chart + interactive HTML table. Interaction: Hover on chart highlights table rows. Justification: Provides both a high-level visual summary and detailed drill-down.
+    - Roadmap: Goal: Show process. Method: HTML/CSS horizontal timeline. Interaction: Click to show phase details. Justification: Intuitive representation of project flow.
+    - Tech Stack: Goal: Inform. Method: Styled cards with icons. Interaction: Hover. Justification: More visually appealing than a list.
+    - Library/Method: All visuals are built with HTML/CSS/Tailwind and Chart.js on a Canvas element. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            background-color: #F8F7F4;
+            font-family: 'Inter', sans-serif;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #26A69A; /* Muted Teal */
+            border-bottom-color: #26A69A;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .feature-card, .tech-card, .stat-card, .phase-item {
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover, .tech-card:hover, .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .phase-item.active {
+            background-color: #26A69A;
+            color: white;
+        }
+         .phase-item.active .phase-circle {
+            background-color: white;
+            border-color: #26A69A;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        tr.highlighted {
+            background-color: #B2DFDB; /* Lighter Teal */
+        }
+        .total-row {
+            font-weight: bold;
+            background-color: #E0F2F1; /* Even lighter teal */
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">E-commerce Website Development Proposal</h1>
+            <p class="mt-2 text-lg text-gray-600">An interactive overview of the project plan, scope, and investment.</p>
+        </header>
+
+        <nav class="bg-white rounded-lg shadow-md p-4 mb-8 sticky top-4 z-10">
+            <ul class="flex flex-wrap justify-center items-center gap-4 md:gap-8">
+                <li><a href="#overview" class="nav-link font-medium p-2">Overview</a></li>
+                <li><a href="#scope" class="nav-link font-medium p-2">Scope & Features</a></li>
+                <li><a href="#cost" class="nav-link font-medium p-2">Cost Breakdown</a></li>
+                <li><a href="#roadmap" class="nav-link font-medium p-2">Project Roadmap</a></li>
+                <li><a href="#tech" class="nav-link font-medium p-2">Tech Stack</a></li>
+            </ul>
+        </nav>
+
+        <main id="main-content">
+            
+            <!-- Overview Section -->
+            <section id="overview" class="content-section">
+                <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                    <h2 class="text-2xl font-bold mb-4 text-center">Project at a Glance</h2>
+                    <p class="text-center text-gray-600 mb-8 max-w-3xl mx-auto">This project will deliver a comprehensive, feature-rich e-commerce platform tailored to your business needs. Below are the key project metrics.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                        <div class="stat-card bg-gray-50 p-6 rounded-lg text-center border border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-600">Total Estimated Cost</h3>
+                            <p id="total-cost-overview" class="text-3xl font-bold text-teal-600 mt-2">Loading...</p>
+                            <p class="text-sm text-gray-500 mt-1">Based on selected features</p>
+                        </div>
+                        <div class="stat-card bg-gray-50 p-6 rounded-lg text-center border border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-600">Estimated Timeline</h3>
+                            <p class="text-3xl font-bold text-teal-600 mt-2">6-10 Weeks</p>
+                            <p class="text-sm text-gray-500 mt-1">From project kickoff to launch</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Scope & Features Section -->
+            <section id="scope" class="content-section">
+                <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                    <h2 class="text-2xl font-bold mb-2 text-center">Project Scope & Features</h2>
+                    <p class="text-center text-gray-600 mb-8 max-w-3xl mx-auto">The project includes the development of core website pages and the integration of key e-commerce functionalities. Click on any card to see more details.</p>
+
+                    <div id="scope-container"></div>
+                </div>
+            </section>
+
+            <!-- Cost Breakdown Section -->
+            <section id="cost" class="content-section">
+                 <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                    <h2 class="text-2xl font-bold mb-2 text-center">Investment Breakdown</h2>
+                    <p class="text-center text-gray-600 mb-8 max-w-3xl mx-auto">This interactive breakdown illustrates how the investment is allocated across different service categories. Hover over the chart segments to highlight the corresponding items in the table. The total estimated cost is summarized at the bottom.</p>
+                    <div class="flex flex-col lg:flex-row gap-8 items-start">
+                        <div class="w-full lg:w-1/3">
+                            <div class="chart-container">
+                                <canvas id="costChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="w-full lg:w-2/3 overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Estimated Cost (BDT)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="costTableBody" class="bg-white divide-y divide-gray-200">
+                                </tbody>
+                                <tfoot>
+                                    <tr class="total-row">
+                                        <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-bold text-gray-900">Total Estimated Cost</td>
+                                        <td id="total-cost-table" class="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-gray-900">Loading...</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                 </div>
+            </section>
+            
+            <!-- Project Roadmap Section -->
+            <section id="roadmap" class="content-section">
+                <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                    <h2 class="text-2xl font-bold mb-2 text-center">Project Roadmap</h2>
+                    <p class="text-center text-gray-600 mb-12 max-w-3xl mx-auto">Our development process is structured in clear phases to ensure quality and transparency from start to finish. Click on a phase to learn more.</p>
+                    
+                    <div id="roadmap-container" class="relative">
+                        <div id="phase-items" class="flex flex-col md:flex-row justify-between w-full gap-8 md:gap-0"></div>
+                    </div>
+
+                    <div id="phase-details" class="mt-12 bg-gray-50 p-6 rounded-lg border border-gray-200 min-h-[100px]">
+                        <p class="text-center text-gray-600">Select a phase above to see details.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tech Stack Section -->
+            <section id="tech" class="content-section">
+                 <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                    <h2 class="text-2xl font-bold mb-2 text-center">Technology Stack</h2>
+                    <p class="text-center text-gray-600 mb-8 max-w-3xl mx-auto">We use a robust and flexible technology stack to build high-quality, scalable e-commerce websites.</p>
+                     <div id="tech-stack-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-4xl mx-auto"></div>
+                </div>
+            </section>
+        </main>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            const mainContent = document.getElementById('main-content');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('.content-section');
+
+            // --- DATA --- //
+            const scopeData = {
+                "Core Pages": [
+                    { title: "Home / Landing Page", description: "A dynamic and engaging landing page with a fully functional, responsive navigation bar. This page will include sections for ongoing offers and social media updates." },
+                    { title: "About Us Page", description: "A dedicated page to showcase your company's story, mission, and values." },
+                    { title: "Contact Us Page", description: "A professional contact page featuring a working contact form (e.g., powered by Contact Form 7 or similar) for customer inquiries." },
+                    { title: "Blog Page", description: "A well-structured blog section with the capability for weekly updates, allowing for content marketing and engagement." },
+                    { title: "All Products Page", description: "A comprehensive page displaying all products, organized with proper categorization (including a 'Bundle Package' category)." },
+                    { title: "Single Product Page", description: "Detailed pages for individual products, featuring product descriptions, images, pricing, and the 'Add to Cart' option." }
+                ],
+                "Key E-commerce Functionalities": [
+                    { title: "WooCommerce Setup", description: "Full integration and configuration of the WooCommerce plugin for robust e-commerce capabilities." },
+                    { title: "Add to Cart Option", description: "Seamless 'Add to Cart' functionality on product pages and product listings." },
+                    { title: "Product Search", description: "Implementation of a search bar allowing users to search products by name or tag." },
+                    { title: "Bilingual Translation", description: "Integration of a multilingual solution to support both English and Bengali languages." },
+                    { title: "Social Media Integration", description: "A dedicated section on the homepage for displaying updates from your social media pages." },
+                    { title: "Messenger Chat Box", description: "Integration of a live chat widget for direct customer communication." },
+                    { title: "Pixel & Google Optimization", description: "Setup of Facebook Pixel, Google Analytics, and basic SEO to track performance and improve visibility." },
+                    { title: "Payment Methods", description: "Integration of Bkash, Nagad, and Cash on Delivery (COD) payment gateways." },
+                    { title: "Delivery Charge Management", description: "Configuration of delivery charges, automatically added at checkout." },
+                    { title: "Offer & Bundle Sections", description: "Prominent sections on the homepage to highlight promotions and bundle packages." }
+                ]
+            };
+
+            const costData = [
+                { category: 'Website Core Development', service: 'WordPress & WooCommerce Setup', costMin: 15000, costMax: 25000 },
+                { category: 'Website Core Development', service: 'Custom Theme Implementation', costMin: 20000, costMax: 40000 },
+                { category: 'Website Core Development', service: 'Page Creation', costMin: 25000, costMax: 50000 },
+                { category: 'E-commerce Features', service: 'Product & Category Setup', costMin: 10000, costMax: 20000 },
+                { category: 'E-commerce Features', service: 'Product Search', costMin: 5000, costMax: 10000 },
+                { category: 'E-commerce Features', service: 'Delivery Charge Integration', costMin: 8000, costMax: 15000 },
+                { category: 'E-commerce Features', service: 'Offer & Bundle Section', costMin: 7000, costMax: 12000 },
+                { category: 'Payment Gateway Integration', service: 'Bkash Integration', costMin: 10000, costMax: 15000 },
+                { category: 'Payment Gateway Integration', service: 'Nagad Integration', costMin: 10000, costMax: 15000 },
+                { category: 'Marketing & Optimization', service: 'Facebook Pixel Setup', costMin: 5000, costMax: 8000 },
+                { category: 'Marketing & Optimization', service: 'Google Analytics & SEO', costMin: 15000, costMax: 26000 },
+                { category: 'Marketing & Optimization', service: 'Social Media Feed', costMin: 4000, costMax: 7000 },
+                { category: 'Communication & Accessibility', service: 'Multilingual Setup', costMin: 15000, costMax: 25000 },
+                { category: 'Communication & Accessibility', service: 'Messenger Chat Box', costMin: 3000, costMax: 5000 },
+            ];
+
+            const roadmapData = [
+                { phase: "1. Discovery & Planning", details: "Detailed discussion of requirements, content gathering, and project timeline finalization." },
+                { phase: "2. Design & Prototyping", details: "Creation of wireframes and mockups for key pages to establish the visual direction." },
+                { phase: "3. Development & Integration", details: "WordPress and WooCommerce setup, page creation, feature implementation, and payment gateway integration." },
+                { phase: "4. Content Population", details: "Adding your product information, images, and static page content to the developed site." },
+                { phase: "5. Testing & QA", details: "Thorough testing across devices and browsers to ensure a bug-free and smooth user experience." },
+                { phase: "6. Deployment & Launch", details: "Making the website live on your domain and performing final configurations." },
+                { phase: "7. Training & Handover", details: "Providing basic training on managing products, orders, and content updates." }
+            ];
+
+            const techStackData = [
+                { name: "WordPress", icon: "W", category: "Platform" },
+                { name: "WooCommerce", icon: "🛒", category: "E-commerce" },
+                { name: "Custom Theme", icon: "🎨", category: "Theme" },
+                { name: "Page Builder", icon: "🏗️", category: "Layout" },
+                { name: "Multilingual Plugin", icon: "🌐", category: "Accessibility" },
+                { name: "SEO Plugin", icon: "📈", category: "Marketing" },
+                { name: "Contact Form", icon: "✉️", category: "Utility" },
+                { name: "JavaScript", icon: "JS", category: "Core Tech"}
+            ];
+
+            // --- NAVIGATION --- //
+            function updateActiveSection(hash) {
+                sections.forEach(section => {
+                    if ('#' + section.id === hash) {
+                        section.classList.add('active');
+                    } else {
+                        section.classList.remove('active');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    if (link.getAttribute('href') === hash) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const hash = this.getAttribute('href');
+                    history.pushState(null, null, hash);
+                    updateActiveSection(hash);
+                });
+            });
+
+            // Handle browser back/forward
+            window.addEventListener('popstate', () => {
+                updateActiveSection(window.location.hash || '#overview');
+            });
+
+            // Initial load
+            updateActiveSection(window.location.hash || '#overview');
+
+            // --- RENDER FUNCTIONS --- //
+            function renderScope() {
+                const container = document.getElementById('scope-container');
+                let html = '';
+                for (const category in scopeData) {
+                    html += `<h3 class="text-xl font-bold mt-8 mb-4 text-gray-800">${category}</h3>`;
+                    html += `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">`;
+                    scopeData[category].forEach(item => {
+                        html += `
+                            <div class="feature-card bg-gray-50 rounded-lg p-4 border border-gray-200 cursor-pointer">
+                                <h4 class="font-semibold text-base text-gray-900">${item.title}</h4>
+                                <p class="text-sm text-gray-600 mt-2 hidden">${item.description}</p>
+                            </div>
+                        `;
+                    });
+                    html += `</div>`;
+                }
+                container.innerHTML = html;
+
+                container.querySelectorAll('.feature-card').forEach(card => {
+                    card.addEventListener('click', () => {
+                        card.querySelector('p').classList.toggle('hidden');
+                    });
+                });
+            }
+            
+            function renderCosts() {
+                const tableBody = document.getElementById('costTableBody');
+                let tableHtml = '';
+                let totalMinCost = 0;
+                let totalMaxCost = 0;
+
+                costData.forEach((item, index) => {
+                    totalMinCost += item.costMin;
+                    totalMaxCost += item.costMax;
+                    tableHtml += `
+                        <tr data-category="${item.category}" data-index="${index}">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">${item.service}</div>
+                                <div class="text-xs text-gray-500">${item.category}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-700">
+                                ৳${item.costMin.toLocaleString()} - ৳${item.costMax.toLocaleString()}
+                            </td>
+                        </tr>
+                    `;
+                });
+                tableBody.innerHTML = tableHtml;
+
+                document.getElementById('total-cost-overview').textContent = `৳${totalMinCost.toLocaleString()} - ৳${totalMaxCost.toLocaleString()}`;
+                document.getElementById('total-cost-table').textContent = `৳${totalMinCost.toLocaleString()} - ৳${totalMaxCost.toLocaleString()}`;
+            }
+
+            function renderRoadmap() {
+                const phaseItemsContainer = document.getElementById('phase-items');
+                const phaseDetailsContainer = document.getElementById('phase-details');
+                let itemsHtml = '';
+                roadmapData.forEach((item, index) => {
+                    itemsHtml += `
+                        <div class="phase-item flex-1 flex md:flex-col items-center gap-4 cursor-pointer p-4 rounded-lg" data-index="${index}">
+                            <div class="phase-circle w-8 h-8 rounded-full border-2 border-gray-300 flex items-center justify-center font-bold text-gray-500">${index + 1}</div>
+                            <h4 class="font-semibold text-center">${item.phase.split('. ')[1]}</h4>
+                        </div>
+                    `;
+                });
+                phaseItemsContainer.innerHTML = itemsHtml;
+
+                phaseItemsContainer.querySelectorAll('.phase-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const index = item.getAttribute('data-index');
+                        
+                        phaseItemsContainer.querySelectorAll('.phase-item').forEach(el => el.classList.remove('active'));
+                        item.classList.add('active');
+
+                        phaseDetailsContainer.innerHTML = `
+                            <h3 class="font-bold text-lg mb-2">${roadmapData[index].phase}</h3>
+                            <p>${roadmapData[index].details}</p>
+                        `;
+                    });
+                });
+            }
+
+            function renderTechStack() {
+                const container = document.getElementById('tech-stack-container');
+                let html = '';
+                techStackData.forEach(tech => {
+                    html += `
+                        <div class="tech-card bg-white p-4 rounded-lg border border-gray-200 text-center">
+                            <div class="text-3xl mb-2">${tech.icon}</div>
+                            <h4 class="font-semibold text-gray-900">${tech.name}</h4>
+                            <p class="text-sm text-gray-500">${tech.category}</p>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            }
+
+            // --- CHART.JS --- //
+            function createCostChart() {
+                const ctx = document.getElementById('costChart').getContext('2d');
+                const aggregatedCosts = costData.reduce((acc, item) => {
+                    if (!acc[item.category]) {
+                        acc[item.category] = 0;
+                    }
+                    acc[item.category] += item.costMax;
+                    return acc;
+                }, {});
+
+                const labels = Object.keys(aggregatedCosts);
+                const data = Object.values(aggregatedCosts);
+                
+                const backgroundColors = [
+                    '#26A69A', '#80CBC4', '#00796B', '#B2DFDB', '#004D40', '#A7FFEB'
+                ];
+                const hoverBackgroundColors = [
+                    '#00897B', '#4DB6AC', '#00695C', '#80CBC4', '#003D33', '#64FFDA'
+                ];
+
+                const costChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Cost Breakdown (Max Estimate)',
+                            data: data,
+                            backgroundColor: backgroundColors,
+                            hoverBackgroundColor: hoverBackgroundColors,
+                            borderColor: '#F8F7F4',
+                            borderWidth: 3,
+                            hoverOffset: 10
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    font: {
+                                        family: "'Inter', sans-serif"
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed !== null) {
+                                            label += `৳${context.parsed.toLocaleString()}`;
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        onHover: (event, chartElement) => {
+                            const tableRows = document.querySelectorAll('#costTableBody tr');
+                            tableRows.forEach(row => row.classList.remove('highlighted'));
+
+                            if (chartElement.length > 0) {
+                                const activeIndex = chartElement[0].index;
+                                const activeCategory = labels[activeIndex];
+                                const rowsToHighlight = document.querySelectorAll(`#costTableBody tr[data-category="${activeCategory}"]`);
+                                rowsToHighlight.forEach(row => row.classList.add('highlighted'));
+                            }
+                        }
+                    }
+                });
+            }
+
+            // --- INITIALIZE --- //
+            renderScope();
+            renderCosts();
+            renderRoadmap();
+            renderTechStack();
+            createCostChart();
+        });
+    </script>
+</body>
+</html>
